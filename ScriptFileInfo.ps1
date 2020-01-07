@@ -1,0 +1,43 @@
+
+<#PSScriptInfo
+
+.VERSION 1.0
+
+.GUID 2fdbeea1-7642-44e3-9c0c-258631425e36
+
+.AUTHOR sammy
+
+.COMPANYNAME
+
+.COPYRIGHT
+
+.TAGS
+
+.LICENSEURI
+
+.PROJECTURI
+
+.ICONURI
+
+.EXTERNALMODULEDEPENDENCIES 
+
+.REQUIREDSCRIPTS
+
+.EXTERNALSCRIPTDEPENDENCIES
+
+.RELEASENOTES
+
+
+.PRIVATEDATA
+
+#>
+
+<# 
+
+.DESCRIPTION 
+  Script taken from Edward van Biljon https://gallery.technet.microsoft.com/office/Clear-Exchange-2013-Log-71abba44 
+
+#> 
+Param()
+
+
