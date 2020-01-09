@@ -66,13 +66,13 @@ $OutputReport = "$UserDocumentsFolder\$($ScriptName)_Output_$(get-date -f yyyy-M
 # Other Option for Log or report file definition (use one of these)
 $ScriptLog = "$UserDocumentsFolder\$($ScriptName)_Logging_$(Get-Date -Format 'dd-MMMM-yyyy-hh-mm-ss-tt').txt"
 <# ---------------------------- /SCRIPT_HEADER ---------------------------- #>
-Begin {
+
     #Checks if the user is in the administrator group. Warns and stops if the user is not.
     if (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
     {
         Write-Host "You are not running this as local administrator. Run it again in an elevated prompt." -BackgroundColor Red; exit
     }
-}
+
 Set-Executionpolicy RemoteSigned
 $days=0
 
@@ -154,7 +154,7 @@ Function MsgBox {
     CleanLogfiles($ETLLoggingPath2)
 #}
 
-End {
+
     <# ---------------------------- SCRIPT_FOOTER ---------------------------- #>
     #Stopping StopWatch and report total elapsed time (TotalSeconds, TotalMilliseconds, TotalMinutes, etc...
     $stopwatch.Stop()
@@ -163,4 +163,3 @@ End {
     $msg = $null
     $StopWatch = $null
     <# ---------------- /SCRIPT_FOOTER (NOTHING BEYOND THIS POINT) ----------- #>
-}
