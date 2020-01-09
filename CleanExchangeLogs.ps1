@@ -76,6 +76,25 @@ Begin {
 Set-Executionpolicy RemoteSigned
 $days=0
 
+#region Functions
+
+Function MsgBox {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Position=0)][String]$msg = "Do you want to continue ?",
+        [Parameter(Position=1)][String]$Title = "Question...",
+        [Parameter(Position=2)]
+            [ValidateSet("OK","OKCancel","YesNo","YesNoCancel")]
+                [String]$Button = "YesNo",
+        [Parameter(Position=3)]
+            [ValidateSet("Asterisk","Error","Exclamation","Hand","Information","None","Question","Stop","Warning")]
+                [String]$Icon = "Question"
+    )
+    Add-Type -AssemblyName presentationframework, presentationcore
+    [System.Windows.MessageBox]::Show($msg,$Title, $Button, $icon)
+}
+
+#endregion End of Functions section
 
 #Process {
 
@@ -87,10 +106,20 @@ $days=0
     # Determining Exchange Logging paths
     $ExchangeInstallPath = $env:ExchangeInstallPath
 
-    $ExchangeLoggingPath="$ExchangeInstallPath\Logging\"
-    $ETLLoggingPath="$ExchangeInstallPath\Bin\Search\Ceres\Diagnostics\ETLTraces\"
-    $ETLLoggingPath2="$ExchangeInstallPath\Bin\Search\Ceres\Diagnostics\Logs"
+    $ExchangeLoggingPath="$ExchangeInstallPath" + "Logging\"
+    $ETLLoggingPath="$ExchangeInstallPath" + "Bin\Search\Ceres\Diagnostics\ETLTraces\"
+    $ETLLoggingPath2="$ExchangeInstallPath" + "Bin\Search\Ceres\Diagnostics\Logs"
   
+    $FoldersStringsForMessageBox = $ExchangeInstallPath + "`n" + $ExchangeLoggingPath + "`n" + $ETLLoggingPath + "`n" + $ETLLoggingPath2
+    $Message = "About to attempt removing Log files in the following folders and their subfolders:`n`n"
+    $MessageBottom = "`n`nOK = Continue, Cancel = Abort"
+    $Msg = $message + $FoldersStringsForMessageBox + $MessageBottom
+    
+
+    $UserResponse = Msgbox -msg $Msg -Title "Confirm folder content deletions" -Button OKCancel
+
+    If ($UserResponse -eq "Cancel") {Write-host "File deletion script ended by user." -BackgroundColor Green;exit}
+
     #Checking if log paths above exist
     # Try {Test-Path $ExchangeLoggingPath;Write-Host "$ExchangeLoggingPath folder exists" -BackgroundColor Green} catch {Write-Host "Error testing path $ExchangeLoggingPath" -BackgroundColor Red;exit}
     # Try {Test-Path $ETLLoggingPath;Write-Host "$ETLLoggingPath folder exists" -BackgroundColor Green} catch {Write-Host "Error testing path $ETLLoggingPath" -BackgroundColor Red;exit}
