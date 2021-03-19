@@ -1,7 +1,7 @@
 
 <#PSScriptInfo
 
-.VERSION 1.2.1
+.VERSION 1.2.2
 
 .GUID 2fdbeea1-7642-44e3-9c0c-258631425e36
 
@@ -55,8 +55,9 @@ $DebugPreference = "Continue"
 # Set Error Action to your needs
 $ErrorActionPreference = "SilentlyContinue"
 #Script Version
-$ScriptVersion = "1.2.1"
+$ScriptVersion = "1.2.2"
 <# Version changes
+v1.2.2 : adapted Message Box title and message if we Read Only files or if we Delete files
 v1.2.1 : rephrasing, removed display file size in KB (keeping MB and GB only)
 v1.2 : added -DoNotDelete switch, to dump file size only without deleting
 v1.1 : fixed Logging function didn't trigger when in Cleanup function
@@ -191,10 +192,16 @@ Function CleanLogfiles([string]$TargetFolder,[int]$DaysOld,[bool]$ListOnly=$Fals
   
     # Asking user if he's sure
     $FoldersStringsForMessageBox = $ExchangeInstallPath + "`n" + $ExchangeLoggingPath + "`n" + $ETLLoggingPath + "`n" + $ETLLoggingPath2
-    $Message = "About to attempt removing Log files from $days days ago from in the following folders and their subfolders:`n`n"
+    if ($DoNotDelete){
+        $Message = "Assessing (Read Only) Log files from $days days ago from in the following folders and their subfolders without deleting:`n`n"
+        $Title = "Assessing (Read Only) Log files number and size"
+    } Else {
+        $Message = "About to attempt REMOVING Log files from $days days ago from in the following folders and their subfolders:`n`n"
+        $Title = "Confirm folder content deletions"
+    }
     $MessageBottom = "`n`nOK = Continue, Cancel = Abort"
     $Msg = $message + $FoldersStringsForMessageBox + $MessageBottom
-    $UserResponse = Msgbox -msg $Msg -Title "Confirm folder content deletions" -Button OKCancel
+    $UserResponse = Msgbox -msg $Msg -Title $title -Button OKCancel
 
     If ($UserResponse -eq "Cancel") {Write-host "File deletion script ended by user." -BackgroundColor Green;exit}
 
