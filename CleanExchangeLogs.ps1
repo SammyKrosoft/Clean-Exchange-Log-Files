@@ -1,7 +1,7 @@
 
 <#PSScriptInfo
 
-.VERSION 1.1.1
+.VERSION 1.2
 
 .GUID 2fdbeea1-7642-44e3-9c0c-258631425e36
 
@@ -55,8 +55,9 @@ $DebugPreference = "Continue"
 # Set Error Action to your needs
 $ErrorActionPreference = "SilentlyContinue"
 #Script Version
-$ScriptVersion = "1.1.1"
+$ScriptVersion = "1.2"
 <# Version changes
+v1.2 : added -DoNotDelete switch, to dump file size only without deleting
 v1.1 : fixed Logging function didn't trigger when in Cleanup function
 V1 : added $Day or -Day parameter, default 5 days ago, added logging function, progress bars, ...
 v0.1 : first script version
