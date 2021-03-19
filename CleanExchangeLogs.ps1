@@ -42,7 +42,7 @@
 [CmdletBinding(DefaultParameterSetName="Exec")]
 Param(
     [Parameter(Mandatory = $false,ParameterSetName="Exec")][int]$Days=5,
-    [Parameter(Mandatory = $false, ParameterSetName="ListOnly")][switch]$ListOnly,
+    [Parameter(Mandatory = $false, ParameterSetName="Exec")][switch]$DoNotDelete,
     [Parameter(Mandatory = $false,ParameterSetName="Check")][switch]$CheckVersion
     
 )
@@ -133,7 +133,7 @@ function Write-Log
 
 
 
-Function CleanLogfiles([string]$TargetFolder,[int]$DaysOld,[switch]$ListOnly)
+Function CleanLogfiles([string]$TargetFolder,[int]$DaysOld,[bool]$ListOnly=$False)
 {
     write-host -debug -ForegroundColor Yellow -BackgroundColor Cyan $TargetFolder
     if (Test-Path $TargetFolder) {
@@ -141,28 +141,35 @@ Function CleanLogfiles([string]$TargetFolder,[int]$DaysOld,[switch]$ListOnly)
         $LastWrite = $Now.AddDays(-$daysOld)
         Write-Log -Message "Last Write Time for $TargetFolder : $LastWrite"
         Try{
-            $Files = Get-ChildItem  $TargetFolder -Recurse | Where-Object {$_.Name -like "*.log" -or $_.Name -like "*.blg" -or $_.Name -like "*.etl"}  | where {$_.lastWriteTime -le "$lastwrite"} | Select-Object FullName  
-            $FilesCount = $Files.Count
+            $Files = Get-ChildItem  $TargetFolder -Recurse | Where-Object {$_.Name -like "*.log" -or $_.Name -like "*.blg" -or $_.Name -like "*.etl"}  | where {$_.lastWriteTime -le "$lastwrite"} | Select-Object FullName,Length
         } Catch {
             Write-Log "Issue trying to access $TargetFolder folder or subfolders - you may not have the proper rights or the folder is not in this location - please retry with elevated PowerShell console" -ForegroundColor Yellow -BackgroundColor Blue
             return
         }
+        $FilesCount = $Files.Count
+        $TotalFileSizeInKB = "{0:N0}" -f ((($Files | Measure-Object -Property Length -Sum).Sum)/1KB)
+        $TotalFileSizeInMB = "{0:N0}" -f ((($Files | Measure-Object -Property Length -Sum).Sum)/1MB)
+        $TotalFileSizeInGB = "{0:N0}" -f ((($Files | Measure-Object -Property Length -Sum).Sum)/1GB)
         Write-Log -Message "Found $FilesCount files in $TargetFolder ..."
+        Write-Log -Message "Total file size for that folder: $TotalFileSizeInKB KB / $TotalFileSizeInMB MB / $TotalFileSizeInGB GB"
         
-        $Counter = 0
-
-        foreach ($File in $Files)
-        {
-             $FullFileName = $File.FullName
-             Write-Progress -Activity "Cleaning files from $TargetFolder older than $DaysOld days" -Status "Cleaning $FullFileName" -Id 2 -ParentID 1 -PercentComplete $($Counter/$FilesCount*100)
-             Write-Log -Message "Deleting file $FullFileName" -Silent
-             Remove-Item $FullFileName -ErrorAction SilentlyContinue | out-null
-             $Counter++
+        If (!($ListOnly)){
+            $Counter = 0
+            foreach ($File in $Files)
+            {
+                $FullFileName = $File.FullName
+                Write-Progress -Activity "Cleaning files from $TargetFolder older than $DaysOld days" -Status "Cleaning $FullFileName" -Id 2 -ParentID 1 -PercentComplete $($Counter/$FilesCount*100)
+                Write-Log -Message "Deleting file $FullFileName" -Silent
+                Remove-Item $FullFileName -ErrorAction SilentlyContinue | out-null
+                $Counter++
+             }
+         } Else {
+            Write-Log "INFO: Read only mode, won't delete"
          }
-      }
-      Else {
-        Write-Log "The folder $TargetFolder doesn't exist! Check the folder path!" -ForegroundColor "red"
-      }
+     }
+     Else {
+        Write-Log "ERROR: The folder $TargetFolder doesn't exist! Check the folder path!"
+     }
  }
 
   #endregion End of Functions section
@@ -191,20 +198,24 @@ Function CleanLogfiles([string]$TargetFolder,[int]$DaysOld,[switch]$ListOnly)
 
 
 
-   
-
+#Checking if user specified "-DoNotDelete" to determine if we run deletion in CleanLogFiles function or not...   
+If ($DoNotDelete){
+    $ListOnlyMode = $True
+} Else {
+    $ListOnlyMode = $False
+}
 
 Write-Progress -Activity "Logging cleanup" -Status "IIS Logs" -Id 1 -PercentComplete 0
-    CleanLogfiles -TargetFolder $IISLogPath -DaysOld $Days
+    CleanLogfiles -TargetFolder $IISLogPath -DaysOld $Days -ListOnly $ListOnlyMode
 
 Write-Progress -Activity "Logging cleanup" -Status "Deleting log files from Exchange Logging" -Id 1 -PercentComplete 25
-    CleanLogfiles -TargetFolder $ExchangeLoggingPath -DaysOld $Days
+    CleanLogfiles -TargetFolder $ExchangeLoggingPath -DaysOld $Days -ListOnly $ListOnlyMode
 
 Write-Progress -Activity "Logging cleanup" -Status "Deleting ETL traces" -Id 1 -PercentComplete 50
-    CleanLogfiles -TargetFolder $ETLLoggingPath -DaysOld $Days
+    CleanLogfiles -TargetFolder $ETLLoggingPath -DaysOld $Days -ListOnly $ListOnlyMode
 
 Write-Progress -Activity "Logging cleanup" -Status "Deleting other ETL traces" -Id 1 -PercentComplete 75
-  CleanLogfiles -TargetFolder $ETLLoggingPath2 -DaysOld $Days
+  CleanLogfiles -TargetFolder $ETLLoggingPath2 -DaysOld $Days -ListOnly $ListOnlyMode
 
 Write-Progress -Activity "Logging cleanup" -Status "CLEANUP COMPLETE" -Id 1 -PercentComplete 100
 
