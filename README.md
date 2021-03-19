@@ -47,4 +47,4 @@ Total file size for that folder: 162,168 KB / 158 MB / 0 GB
 
 # Download the Latest version of the script
 
-[Download later version of CleanExchangeLogs.ps1 script](https://github.com/SammyKrosoft/Clean-Exchange-Log-Files/releases/latest/download/CleanExchangeLogs.ps1)
+[Download latest version of CleanExchangeLogs.ps1](https://github.com/SammyKrosoft/Clean-Exchange-Log-Files/releases/latest/download/CleanExchangeLogs.ps1)
