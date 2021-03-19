@@ -95,40 +95,7 @@ Function MsgBox {
     [System.Windows.MessageBox]::Show($msg,$Title, $Button, $icon)
 }
 
-
-Function CleanLogfiles($TargetFolder,$DaysOld)
-{
-    write-host -debug -ForegroundColor Yellow -BackgroundColor Cyan $TargetFolder
-    if (Test-Path $TargetFolder) {
-        $Now = Get-Date
-        $LastWrite = $Now.AddDays(-$daysOld)
-        Write-Log -Message "Last Write Time for $TargetFolder : $LastWrite"
-        Try{
-            $Files = Get-ChildItem  $TargetFolder -Recurse | Where-Object {$_.Name -like "*.log" -or $_.Name -like "*.blg" -or $_.Name -like "*.etl"}  | where {$_.lastWriteTime -le "$lastwrite"} | Select-Object FullName  
-            $FilesCount = $Files.Count
-        } Catch {
-            Write-Log "Issue trying to access $TargetFolder folder or subfolders - you may not have the proper rights or the folder is not in this location - please retry with elevated PowerShell console" -ForegroundColor Yellow -BackgroundColor Blue
-            return
-        }
-        Write-Log "Found $FilesCount files in $TargetFolder ..."
-        
-        $Counter = 0
-
-        foreach ($File in $Files)
-        {
-             $FullFileName = $File.FullName
-             Write-Progress -Activity "Cleaning files from $TargetFolder older than $DaysOld days" -Status "Cleaning $FullFileName" -Id 2 -ParentID 1 -PercentComplete $($Counter/$FilesCount*100)
-             Write-Log "Deleting file $FullFileName" -ForegroundColor "yellow"; 
-             Remove-Item $FullFileName -ErrorAction SilentlyContinue | out-null
-             $Counter++
-         }
-      }
-      Else {
-        Write-Log "The folder $TargetFolder doesn't exist! Check the folder path!" -ForegroundColor "red"
-      }
- }
-
- function Write-Log
+function Write-Log
 {
 	<#
 	.SYNOPSIS
@@ -144,7 +111,8 @@ Function CleanLogfiles($TargetFolder,$DaysOld)
         [Parameter(Mandatory=$false,position = 1)]
         [string]$LogFileName=$ScriptLog,
 		[Parameter(Mandatory=$true,position = 0)]
-		[string]$Message
+		[string]$Message,
+        [Parameter(Mandatory=$false)][switch]$Silent
 	)
 	
 	try
@@ -152,7 +120,7 @@ Function CleanLogfiles($TargetFolder,$DaysOld)
 		$DateTime = Get-Date -Format ‘MM-dd-yy HH:mm:ss’
 		$Invocation = "$($MyInvocation.MyCommand.Source | Split-Path -Leaf):$($MyInvocation.ScriptLineNumber)"
 		Add-Content -Value "$DateTime - $Invocation - $Message" -Path $LogFileName
-		Write-Host $Message -ForegroundColor Green
+		if (!($Silent)){Write-Host $Message -ForegroundColor Green}
 	}
 	catch
 	{
@@ -160,7 +128,41 @@ Function CleanLogfiles($TargetFolder,$DaysOld)
 	}
 }
 
- #endregion End of Functions section
+
+
+Function CleanLogfiles($TargetFolder,$DaysOld)
+{
+    write-host -debug -ForegroundColor Yellow -BackgroundColor Cyan $TargetFolder
+    if (Test-Path $TargetFolder) {
+        $Now = Get-Date
+        $LastWrite = $Now.AddDays(-$daysOld)
+        Write-Log -Message "Last Write Time for $TargetFolder : $LastWrite"
+        Try{
+            $Files = Get-ChildItem  $TargetFolder -Recurse | Where-Object {$_.Name -like "*.log" -or $_.Name -like "*.blg" -or $_.Name -like "*.etl"}  | where {$_.lastWriteTime -le "$lastwrite"} | Select-Object FullName  
+            $FilesCount = $Files.Count
+        } Catch {
+            Write-Log "Issue trying to access $TargetFolder folder or subfolders - you may not have the proper rights or the folder is not in this location - please retry with elevated PowerShell console" -ForegroundColor Yellow -BackgroundColor Blue
+            return
+        }
+        Write-Log -Message "Found $FilesCount files in $TargetFolder ..."
+        
+        $Counter = 0
+
+        foreach ($File in $Files)
+        {
+             $FullFileName = $File.FullName
+             Write-Progress -Activity "Cleaning files from $TargetFolder older than $DaysOld days" -Status "Cleaning $FullFileName" -Id 2 -ParentID 1 -PercentComplete $($Counter/$FilesCount*100)
+             Write-Log -Message "Deleting file $FullFileName" -Silent
+             Remove-Item $FullFileName -ErrorAction SilentlyContinue | out-null
+             $Counter++
+         }
+      }
+      Else {
+        Write-Log "The folder $TargetFolder doesn't exist! Check the folder path!" -ForegroundColor "red"
+      }
+ }
+
+  #endregion End of Functions section
 
 #Process {
 
