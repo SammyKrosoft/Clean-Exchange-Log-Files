@@ -32,16 +32,17 @@
 <# 
 
 .DESCRIPTION 
-    Script taken from Edward van Biljon https://gallery.technet.microsoft.com/office/Clear-Exchange-2013-Log-71abba44
+    Script adapted from Edward van Biljon https://gallery.technet.microsoft.com/office/Clear-Exchange-2013-Log-71abba44
 
 .LINK
     https://gallery.technet.microsoft.com/office/Clear-Exchange-2013-Log-71abba44
     https://github.com/SammyKrosoft/Clean-Exchange-Log-Files
 
 #>
-[CmdletBinding()]
+[CmdletBinding(DefaultParameterSetName="Exec")]
 Param(
-    [Parameter(Mandatory = $false)][switch]$CheckVersion
+    [Parameter(Mandatory = $false,ParameterSetName="Check")][switch]$CheckVersion,
+    [Parameter(Mandatory = $false,ParameterSetName="Exec")][int]$Days=5
 )
 <# ------- SCRIPT_HEADER (Only Get-Help comments and Param() above this point) ------- #>
 #Initializing a $Stopwatch variable to use to measure script execution
@@ -52,29 +53,29 @@ $DebugPreference = "Continue"
 # Set Error Action to your needs
 $ErrorActionPreference = "SilentlyContinue"
 #Script Version
-$ScriptVersion = "0.1"
+$ScriptVersion = "1"
 <# Version changes
+V1 : added $Day or -Day parameter, default 5 days ago
 v0.1 : first script version
-v0.1 -> v0.5 : 
 #>
 
 $ScriptName = $MyInvocation.MyCommand.Name
 If ($CheckVersion) {Write-Host "SCRIPT NAME     : $ScriptName `nSCRIPT VERSION  : $ScriptVersion";exit}
 # Log or report file definition
-$UserDocumentsFolder = "$($env:APPDATA)\Documents"
+$UserDocumentsFolder = "$($env:USERPROFILE)\Documents"
 $OutputReport = "$UserDocumentsFolder\$($ScriptName)_Output_$(get-date -f yyyy-MM-dd-hh-mm-ss).csv"
 # Other Option for Log or report file definition (use one of these)
 $ScriptLog = "$UserDocumentsFolder\$($ScriptName)_Logging_$(Get-Date -Format 'dd-MMMM-yyyy-hh-mm-ss-tt').txt"
 <# ---------------------------- /SCRIPT_HEADER ---------------------------- #>
 
     #Checks if the user is in the administrator group. Warns and stops if the user is not.
-    if (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
-    {
-        Write-Host "You are not running this as local administrator. Run it again in an elevated prompt." -BackgroundColor Red; exit
-    }
+if (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
+{
+    Write-Host "You are not running this as local administrator. Run it again in an elevated prompt." -BackgroundColor Red; exit
+}
 
 Set-Executionpolicy RemoteSigned
-$days=0
+#$days=5 defining 
 
 #region Functions
 
@@ -94,7 +95,72 @@ Function MsgBox {
     [System.Windows.MessageBox]::Show($msg,$Title, $Button, $icon)
 }
 
-#endregion End of Functions section
+
+Function CleanLogfiles($TargetFolder,$DaysOld)
+{
+    write-host -debug -ForegroundColor Yellow -BackgroundColor Cyan $TargetFolder
+    if (Test-Path $TargetFolder) {
+        $Now = Get-Date
+        $LastWrite = $Now.AddDays(-$daysOld)
+        Write-Log -Message "Last Write Time for $TargetFolder : $LastWrite"
+        Try{
+            $Files = Get-ChildItem  $TargetFolder -Recurse | Where-Object {$_.Name -like "*.log" -or $_.Name -like "*.blg" -or $_.Name -like "*.etl"}  | where {$_.lastWriteTime -le "$lastwrite"} | Select-Object FullName  
+            $FilesCount = $Files.Count
+        } Catch {
+            Write-Log "Issue trying to access $TargetFolder folder or subfolders - you may not have the proper rights or the folder is not in this location - please retry with elevated PowerShell console" -ForegroundColor Yellow -BackgroundColor Blue
+            return
+        }
+        Write-Log "Found $FilesCount files in $TargetFolder ..."
+        
+        $Counter = 0
+
+        foreach ($File in $Files)
+        {
+             $FullFileName = $File.FullName
+             Write-Progress -Activity "Cleaning files from $TargetFolder older than $DaysOld days" -Status "Cleaning $FullFileName" -Id 2 -ParentID 1 -PercentComplete $($Counter/$FilesCount*100)
+             Write-Log "Deleting file $FullFileName" -ForegroundColor "yellow"; 
+             Remove-Item $FullFileName -ErrorAction SilentlyContinue | out-null
+             $Counter++
+         }
+      }
+      Else {
+        Write-Log "The folder $TargetFolder doesn't exist! Check the folder path!" -ForegroundColor "red"
+      }
+ }
+
+ function Write-Log
+{
+	<#
+	.SYNOPSIS
+		This function creates or appends a line to a log file.
+	.PARAMETER  Message
+		The message parameter is the log message you'd like to record to the log file.
+	.EXAMPLE
+		PS C:\> Write-Log -Message 'Value1'
+		This example shows how to call the Write-Log function with named parameters.
+	#>
+	[CmdletBinding()]
+	param (
+        [Parameter(Mandatory=$false,position = 1)]
+        [string]$LogFileName=$ScriptLog,
+		[Parameter(Mandatory=$true,position = 0)]
+		[string]$Message
+	)
+	
+	try
+	{
+		$DateTime = Get-Date -Format ‘MM-dd-yy HH:mm:ss’
+		$Invocation = "$($MyInvocation.MyCommand.Source | Split-Path -Leaf):$($MyInvocation.ScriptLineNumber)"
+		Add-Content -Value "$DateTime - $Invocation - $Message" -Path $LogFileName
+		Write-Host $Message -ForegroundColor Green
+	}
+	catch
+	{
+		Write-Error $_.Exception.Message
+	}
+}
+
+ #endregion End of Functions section
 
 #Process {
 
@@ -105,53 +171,39 @@ Function MsgBox {
 
     # Determining Exchange Logging paths
     $ExchangeInstallPath = $env:ExchangeInstallPath
-
     $ExchangeLoggingPath="$ExchangeInstallPath" + "Logging\"
     $ETLLoggingPath="$ExchangeInstallPath" + "Bin\Search\Ceres\Diagnostics\ETLTraces\"
     $ETLLoggingPath2="$ExchangeInstallPath" + "Bin\Search\Ceres\Diagnostics\Logs"
   
+    # Asking user if he's sure
     $FoldersStringsForMessageBox = $ExchangeInstallPath + "`n" + $ExchangeLoggingPath + "`n" + $ETLLoggingPath + "`n" + $ETLLoggingPath2
-    $Message = "About to attempt removing Log files in the following folders and their subfolders:`n`n"
+    $Message = "About to attempt removing Log files from $days days ago from in the following folders and their subfolders:`n`n"
     $MessageBottom = "`n`nOK = Continue, Cancel = Abort"
     $Msg = $message + $FoldersStringsForMessageBox + $MessageBottom
-    
-
     $UserResponse = Msgbox -msg $Msg -Title "Confirm folder content deletions" -Button OKCancel
 
     If ($UserResponse -eq "Cancel") {Write-host "File deletion script ended by user." -BackgroundColor Green;exit}
 
-    #Checking if log paths above exist
-    # Try {Test-Path $ExchangeLoggingPath;Write-Host "$ExchangeLoggingPath folder exists" -BackgroundColor Green} catch {Write-Host "Error testing path $ExchangeLoggingPath" -BackgroundColor Red;exit}
-    # Try {Test-Path $ETLLoggingPath;Write-Host "$ETLLoggingPath folder exists" -BackgroundColor Green} catch {Write-Host "Error testing path $ETLLoggingPath" -BackgroundColor Red;exit}
-    # Try {Test-Path $ETLLoggingPath2;Write-Host "$ETLLoggingPath2 folder exists" -BackgroundColor Green} catch {Write-Host "Error testing path $ETLLoggingPath2" -BackgroundColor Red;exit}
+    CleanLogfiles -TargetFolder $IISLogPath -DaysOld $Days
+    CleanLogfiles -TargetFolder $ExchangeLoggingPath -DaysOld $Days
+    CleanLogfiles -TargetFolder $ETLLoggingPath -DaysOld $Days
+    CleanLogfiles -TargetFolder $ETLLoggingPath2 -DaysOld $Days
 
 
-    Function CleanLogfiles($TargetFolder)
-    {
-    write-host -debug -ForegroundColor Yellow -BackgroundColor Cyan $TargetFolder
+Write-Progress -Activity "Logging cleanup" -Status "IIS Logs" -Id 1 -PercentComplete 0
+CleanLogfiles($IISLogPath)
 
-        if (Test-Path $TargetFolder) {
-            $Now = Get-Date
-            $LastWrite = $Now.AddDays(-$days)
-        #   $Files = Get-ChildItem $TargetFolder -Include *.log,*.blg, *.etl -Recurse | Where {$_.LastWriteTime -le "$LastWrite"}
-            $Files = Get-ChildItem "C:\Program Files\Microsoft\Exchange Server\V15\Logging\"  -Recurse | Where-Object {$_.Name -like "*.log" -or $_.Name -like "*.blg" -or $_.Name -like "*.etl"}  | where {$_.lastWriteTime -le "$lastwrite"} | Select-Object FullName  
-            $FilesCount = $Files.Count
-            Write-Host "Found $FilesCount files in $TargetFolder ... continue Y/N ?"
-            foreach ($File in $Files)
-                {
-                $FullFileName = $File.FullName  
-                Write-Host "Deleting file $FullFileName" -ForegroundColor "yellow"; 
-                    Remove-Item $FullFileName -ErrorAction SilentlyContinue | out-null
-                }
-        }
-    Else {
-        Write-Host "The folder $TargetFolder doesn't exist! Check the folder path!" -ForegroundColor "red"
-        }
-    }
-    CleanLogfiles($IISLogPath)
-    CleanLogfiles($ExchangeLoggingPath)
-    CleanLogfiles($ETLLoggingPath)
-    CleanLogfiles($ETLLoggingPath2)
+Write-Progress -Activity "Logging cleanup" -Status "Deleting log files from Exchange Logging" -Id 1 -PercentComplete 25
+CleanLogfiles($ExchangeLoggingPath)
+
+Write-Progress -Activity "Logging cleanup" -Status "Deleting ETL traces" -Id 1 -PercentComplete 50
+CleanLogfiles($ETLLoggingPath)
+
+Write-Progress -Activity "Logging cleanup" -Status "Deleting other ETL traces" -Id 1 -PercentComplete 75
+CleanLogfiles($ETLLoggingPath2)
+
+Write-Progress -Activity "Logging cleanup" -Status "CLEANUP COMPLETE" -Id 1 -PercentComplete 100
+
 #}
 
 
