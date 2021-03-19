@@ -184,23 +184,22 @@ Function CleanLogfiles($TargetFolder,$DaysOld)
 
     If ($UserResponse -eq "Cancel") {Write-host "File deletion script ended by user." -BackgroundColor Green;exit}
 
-    CleanLogfiles -TargetFolder $IISLogPath -DaysOld $Days
-    CleanLogfiles -TargetFolder $ExchangeLoggingPath -DaysOld $Days
-    CleanLogfiles -TargetFolder $ETLLoggingPath -DaysOld $Days
-    CleanLogfiles -TargetFolder $ETLLoggingPath2 -DaysOld $Days
+
+
+   
 
 
 Write-Progress -Activity "Logging cleanup" -Status "IIS Logs" -Id 1 -PercentComplete 0
-CleanLogfiles($IISLogPath)
+    CleanLogfiles -TargetFolder $IISLogPath -DaysOld $Days
 
 Write-Progress -Activity "Logging cleanup" -Status "Deleting log files from Exchange Logging" -Id 1 -PercentComplete 25
-CleanLogfiles($ExchangeLoggingPath)
+    CleanLogfiles -TargetFolder $ExchangeLoggingPath -DaysOld $Days
 
 Write-Progress -Activity "Logging cleanup" -Status "Deleting ETL traces" -Id 1 -PercentComplete 50
-CleanLogfiles($ETLLoggingPath)
+    CleanLogfiles -TargetFolder $ETLLoggingPath -DaysOld $Days
 
 Write-Progress -Activity "Logging cleanup" -Status "Deleting other ETL traces" -Id 1 -PercentComplete 75
-CleanLogfiles($ETLLoggingPath2)
+  CleanLogfiles -TargetFolder $ETLLoggingPath2 -DaysOld $Days
 
 Write-Progress -Activity "Logging cleanup" -Status "CLEANUP COMPLETE" -Id 1 -PercentComplete 100
 
