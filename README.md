@@ -1,11 +1,13 @@
 # Clean-Exchange-Log-Files
-- PowerShell script taken from Edward Van Biljon (was on his Technet Gallery, which has been decommissioned in 2020 (original link: *gallery.technet.microsoft.com/office/Clear-Exchange-2013-Log-71abba44*) and modified a bit to be more generic:
+- PowerShell script taken and adapted from Edward Van Biljon (was on his Technet Gallery, which has been decommissioned in 2020 (original link: *gallery.technet.microsoft.com/office/Clear-Exchange-2013-Log-71abba44*) with the following modifications:
+
+- No need to modify the IIS and Exchange Path => the script uses environment variables to find the Exchange Logging and IIS Logging paths (script has to be used on Exchange servers to remove the log files)
+
+- added -DoNotDelete switch to just assess the amount of files that we'd potentially remove
 
 - added progress bars
 
 - added script log file
-
-- No need to modify the IIS and Exchange Path => the script uses environment variables to find the Exhcange Logging and IIS Logging paths.
 
 - Usage 
 
