@@ -1,7 +1,7 @@
 
 <#PSScriptInfo
 
-.VERSION 1.0
+.VERSION 1.1
 
 .GUID 2fdbeea1-7642-44e3-9c0c-258631425e36
 
@@ -53,9 +53,10 @@ $DebugPreference = "Continue"
 # Set Error Action to your needs
 $ErrorActionPreference = "SilentlyContinue"
 #Script Version
-$ScriptVersion = "1"
+$ScriptVersion = "1.1"
 <# Version changes
-V1 : added $Day or -Day parameter, default 5 days ago
+v1.1 : fixed Logging function didn't trigger when in Cleanup function
+V1 : added $Day or -Day parameter, default 5 days ago, added logging function, progress bars, ...
 v0.1 : first script version
 #>
 
