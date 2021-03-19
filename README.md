@@ -14,3 +14,7 @@ Usage (example to clean Exchange Logging files and IIS Log files aged 5 days and
 .\CleanExchangeLogFiles.ps1 -Days 5
 
 ```
+
+# Download the Latest version of the script
+
+[CleanExchangeLogs.ps1 (latest version)](https://github.com/SammyKrosoft/Clean-Exchange-Log-Files/releases/latest/download/CleanExchangeLogs.ps1)
