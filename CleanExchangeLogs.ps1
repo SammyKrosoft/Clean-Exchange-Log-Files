@@ -1,7 +1,7 @@
 
 <#PSScriptInfo
 
-.VERSION 1.2
+.VERSION 1.2.1
 
 .GUID 2fdbeea1-7642-44e3-9c0c-258631425e36
 
@@ -55,8 +55,9 @@ $DebugPreference = "Continue"
 # Set Error Action to your needs
 $ErrorActionPreference = "SilentlyContinue"
 #Script Version
-$ScriptVersion = "1.2"
+$ScriptVersion = "1.2.1"
 <# Version changes
+v1.2.1 : rephrasing, removed display file size in KB (keeping MB and GB only)
 v1.2 : added -DoNotDelete switch, to dump file size only without deleting
 v1.1 : fixed Logging function didn't trigger when in Cleanup function
 V1 : added $Day or -Day parameter, default 5 days ago, added logging function, progress bars, ...
@@ -140,7 +141,7 @@ Function CleanLogfiles([string]$TargetFolder,[int]$DaysOld,[bool]$ListOnly=$Fals
     if (Test-Path $TargetFolder) {
         $Now = Get-Date
         $LastWrite = $Now.AddDays(-$daysOld)
-        Write-Log -Message "Last Write Time for $TargetFolder : $LastWrite"
+        Write-Log -Message "Will check all files for $TargetFolder older than $LastWrite inclusive"
         Try{
             $Files = Get-ChildItem  $TargetFolder -Recurse | Where-Object {$_.Name -like "*.log" -or $_.Name -like "*.blg" -or $_.Name -like "*.etl"}  | where {$_.lastWriteTime -le "$lastwrite"} | Select-Object FullName,Length
         } Catch {
@@ -148,11 +149,11 @@ Function CleanLogfiles([string]$TargetFolder,[int]$DaysOld,[bool]$ListOnly=$Fals
             return
         }
         $FilesCount = $Files.Count
-        $TotalFileSizeInKB = "{0:N0}" -f ((($Files | Measure-Object -Property Length -Sum).Sum)/1KB)
-        $TotalFileSizeInMB = "{0:N0}" -f ((($Files | Measure-Object -Property Length -Sum).Sum)/1MB)
-        $TotalFileSizeInGB = "{0:N0}" -f ((($Files | Measure-Object -Property Length -Sum).Sum)/1GB)
+        #$TotalFileSizeInKB = "{0:N0}" -f ((($Files | Measure-Object -Property Length -Sum).Sum)/1KB)
+        $TotalFileSizeInMB = "{0:N3}" -f ((($Files | Measure-Object -Property Length -Sum).Sum)/1MB)
+        $TotalFileSizeInGB = "{0:N3}" -f ((($Files | Measure-Object -Property Length -Sum).Sum)/1GB)
         Write-Log -Message "Found $FilesCount files in $TargetFolder ..."
-        Write-Log -Message "Total file size for that folder: $TotalFileSizeInKB KB / $TotalFileSizeInMB MB / $TotalFileSizeInGB GB"
+        Write-Log -Message "Total file size for that folder: $TotalFileSizeInMB MB / $TotalFileSizeInGB GB"
         
         If (!($ListOnly)){
             $Counter = 0
