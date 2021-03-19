@@ -1,7 +1,7 @@
 
 <#PSScriptInfo
 
-.VERSION 1.1
+.VERSION 1.1.1
 
 .GUID 2fdbeea1-7642-44e3-9c0c-258631425e36
 
@@ -41,8 +41,10 @@
 #>
 [CmdletBinding(DefaultParameterSetName="Exec")]
 Param(
-    [Parameter(Mandatory = $false,ParameterSetName="Check")][switch]$CheckVersion,
-    [Parameter(Mandatory = $false,ParameterSetName="Exec")][int]$Days=5
+    [Parameter(Mandatory = $false,ParameterSetName="Exec")][int]$Days=5,
+    [Parameter(Mandatory = $false, ParameterSetName="ListOnly")][switch]$ListOnly,
+    [Parameter(Mandatory = $false,ParameterSetName="Check")][switch]$CheckVersion
+    
 )
 <# ------- SCRIPT_HEADER (Only Get-Help comments and Param() above this point) ------- #>
 #Initializing a $Stopwatch variable to use to measure script execution
@@ -53,7 +55,7 @@ $DebugPreference = "Continue"
 # Set Error Action to your needs
 $ErrorActionPreference = "SilentlyContinue"
 #Script Version
-$ScriptVersion = "1.1"
+$ScriptVersion = "1.1.1"
 <# Version changes
 v1.1 : fixed Logging function didn't trigger when in Cleanup function
 V1 : added $Day or -Day parameter, default 5 days ago, added logging function, progress bars, ...
@@ -131,7 +133,7 @@ function Write-Log
 
 
 
-Function CleanLogfiles($TargetFolder,$DaysOld)
+Function CleanLogfiles([string]$TargetFolder,[int]$DaysOld,[switch]$ListOnly)
 {
     write-host -debug -ForegroundColor Yellow -BackgroundColor Cyan $TargetFolder
     if (Test-Path $TargetFolder) {
@@ -213,7 +215,7 @@ Write-Progress -Activity "Logging cleanup" -Status "CLEANUP COMPLETE" -Id 1 -Per
     #Stopping StopWatch and report total elapsed time (TotalSeconds, TotalMilliseconds, TotalMinutes, etc...
     $stopwatch.Stop()
     $msg = "`n`nThe script took $([math]::round($($StopWatch.Elapsed.TotalSeconds),2)) seconds to execute..."
-    Write-Host $msg
+    Write-Log $msg
     $msg = $null
     $StopWatch = $null
     <# ---------------- /SCRIPT_FOOTER (NOTHING BEYOND THIS POINT) ----------- #>
