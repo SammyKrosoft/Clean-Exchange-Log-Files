@@ -1,7 +1,7 @@
 
 <#PSScriptInfo
 
-.VERSION 1.2.2
+.VERSION 1.2.3
 
 .GUID 2fdbeea1-7642-44e3-9c0c-258631425e36
 
@@ -55,8 +55,9 @@ $DebugPreference = "Continue"
 # Set Error Action to your needs
 $ErrorActionPreference = "SilentlyContinue"
 #Script Version
-$ScriptVersion = "1.2.2"
+$ScriptVersion = "1.2.3"
 <# Version changes
+v1.2.3 : fixed broken script (sorry about that)
 v1.2.2 : adapted Message Box title and message if we Read Only files or if we Delete files
 v1.2.1 : rephrasing, removed display file size in KB (keeping MB and GB only)
 v1.2 : added -DoNotDelete switch, to dump file size only without deleting
