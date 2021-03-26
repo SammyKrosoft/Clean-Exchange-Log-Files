@@ -1,7 +1,7 @@
 
 <#PSScriptInfo
 
-.VERSION 1.2.4
+.VERSION 1.3
 
 .GUID 2fdbeea1-7642-44e3-9c0c-258631425e36
 
@@ -43,6 +43,7 @@
 Param(
     [Parameter(Mandatory = $false,ParameterSetName="Exec")][int]$Days=5,
     [Parameter(Mandatory = $false, ParameterSetName="Exec")][switch]$DoNotDelete,
+    [Parameter(Mandatory = $false)][switch]$NoConfirmation,
     [Parameter(Mandatory = $false,ParameterSetName="Check")][switch]$CheckVersion
     
 )
@@ -55,8 +56,9 @@ $DebugPreference = "Continue"
 # Set Error Action to your needs
 $ErrorActionPreference = "SilentlyContinue"
 #Script Version
-$ScriptVersion = "1.2.4"
+$ScriptVersion = "1.3"
 <# Version changes
+v1.3   : added -NoConfirmation switch to bypass the confirmation dialog box.
 v1.2.4 : update note with no update: script was NOT broken... GitHub Releases made downloads strip line feed/carriage return.
 v1.2.3 : fixed broken script (sorry about that)
 v1.2.2 : adapted Message Box title and message if we Read Only files or if we Delete files
@@ -191,7 +193,8 @@ Function CleanLogfiles([string]$TargetFolder,[int]$DaysOld,[bool]$ListOnly=$Fals
     $ExchangeLoggingPath="$ExchangeInstallPath" + "Logging\"
     $ETLLoggingPath="$ExchangeInstallPath" + "Bin\Search\Ceres\Diagnostics\ETLTraces\"
     $ETLLoggingPath2="$ExchangeInstallPath" + "Bin\Search\Ceres\Diagnostics\Logs"
-  
+
+If (!($NoConfirmation)){  
     # Asking user if he's sure
     $FoldersStringsForMessageBox = $ExchangeInstallPath + "`n" + $ExchangeLoggingPath + "`n" + $ETLLoggingPath + "`n" + $ETLLoggingPath2
     if ($DoNotDelete){
@@ -206,7 +209,7 @@ Function CleanLogfiles([string]$TargetFolder,[int]$DaysOld,[bool]$ListOnly=$Fals
     $UserResponse = Msgbox -msg $Msg -Title $title -Button OKCancel
 
     If ($UserResponse -eq "Cancel") {Write-host "File deletion script ended by user." -BackgroundColor Green;exit}
-
+ }
 
 
 #Checking if user specified "-DoNotDelete" to determine if we run deletion in CleanLogFiles function or not...   
