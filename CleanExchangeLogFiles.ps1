@@ -1,7 +1,7 @@
 
 <#PSScriptInfo
 
-.VERSION 1.3
+.VERSION 1.3.1
 
 .GUID 2fdbeea1-7642-44e3-9c0c-258631425e36
 
@@ -33,6 +33,22 @@
 
 .DESCRIPTION 
     Script adapted from Edward van Biljon https://gallery.technet.microsoft.com/office/Clear-Exchange-2013-Log-71abba44
+    Added bells ans whistles, getting Exchange Logging directories from environment variables, added progress bars,
+    options for the -Days back, the -DoNotDelete options to just list the files size, the dialog boxes to confirm
+    continue with the script Y/N, and the -NoConfirmation switch to bypass the confirmation dialog boxes to use the 
+    script on Windows Scheduled task.
+
+.EXAMPLE
+    .\CleanExchangeLogFiles.ps1 -Days 5 -DoNotDelete
+    Will just display the folders and the total size for each folder that we may want to delete
+
+.EXAMPLE
+    .\CleanExchangeLogFiles.ps1 -Days 30
+    Will display the folders, and delete all files older than 30 days in the IIS folder and Exchange Logging directories
+
+.EXAMPLE
+    .\CleanExchangeLogFiles.ps1 -Days 30 -NoConfirmation
+    To be used in Windows Scheduled tasks only as it doesn't provide user confirmation to delete files or cancel script.
 
 .LINK
     https://gallery.technet.microsoft.com/office/Clear-Exchange-2013-Log-71abba44
@@ -56,8 +72,9 @@ $DebugPreference = "Continue"
 # Set Error Action to your needs
 $ErrorActionPreference = "SilentlyContinue"
 #Script Version
-$ScriptVersion = "1.3"
+$ScriptVersion = "1.3.1"
 <# Version changes
+v1.3.1 : renamed the script from CleanExchangeLogs.ps1 to CleanExchangeLogFiles.ps1 and added examples and completed description
 v1.3   : added -NoConfirmation switch to bypass the confirmation dialog box.
 v1.2.4 : update note with no update: script was NOT broken... GitHub Releases made downloads strip line feed/carriage return.
 v1.2.3 : fixed broken script (sorry about that)
