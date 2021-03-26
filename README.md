@@ -58,7 +58,7 @@ This will launch the script in files deletion mode immediately, without the need
 The script log file will be located on the user's Documents folder:
 ![image](https://user-images.githubusercontent.com/33433229/112653994-51aa9500-8e25-11eb-95f3-b643e5f03d3b.png)
 
-And it will contain the same information than on the screen:
+And it will contain the same information as on the screen:
 ![image](https://user-images.githubusercontent.com/33433229/112653900-3f305b80-8e25-11eb-9c7c-946196afb044.png)
 
 
