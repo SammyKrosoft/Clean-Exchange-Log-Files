@@ -1,4 +1,7 @@
 # Clean-Exchange-Log-Files
+
+***NOTE: there is an issue when I publish releases of the script - for now I'll just provide the link to the RAW text script, or you can just download the whole repository and just keep the `CleanExchangeLogFiles.ps1` file. Apologizes for the invonvenience***
+
 - PowerShell script taken and adapted from [Edward Van Biljon](https://social.technet.microsoft.com/profile/edward+van+biljon) (was on his Technet Gallery, which has been decommissioned in 2020 (original link: *gallery.technet.microsoft.com/office/Clear-Exchange-2013-Log-71abba44*) with the following modifications:
 
 - No need to modify the IIS and Exchange Path => the script uses environment variables to find the Exchange Logging and IIS Logging paths (script has to be used on Exchange servers to remove the log files)
@@ -56,4 +59,4 @@ The script took 2.57 seconds to execute...
 
 # Download the Latest version of the script
 
-[Download latest version of CleanExchangeLogs.ps1](https://github.com/SammyKrosoft/Clean-Exchange-Log-Files/releases/latest/download/CleanExchangeLogs.ps1)
+[Either download the whole repo, or copy/paste the text of CleanExchangeLogs.ps1 from this link](https://raw.githubusercontent.com/SammyKrosoft/Clean-Exchange-Log-Files/master/CleanExchangeLogs.ps1)
