@@ -1,7 +1,7 @@
 
 <#PSScriptInfo
 
-.VERSION 1.3.1
+.VERSION 1.3.2
 
 .GUID 2fdbeea1-7642-44e3-9c0c-258631425e36
 
@@ -72,8 +72,9 @@ $DebugPreference = "Continue"
 # Set Error Action to your needs
 $ErrorActionPreference = "SilentlyContinue"
 #Script Version
-$ScriptVersion = "1.3.1"
+$ScriptVersion = "1.3.2"
 <# Version changes
+v1.3.2 : changed color of folders display (was yellow on cyan, now is dark red on cyan)
 v1.3.1 : renamed the script from CleanExchangeLogs.ps1 to CleanExchangeLogFiles.ps1 and added examples and completed description
 v1.3   : added -NoConfirmation switch to bypass the confirmation dialog box.
 v1.2.4 : update note with no update: script was NOT broken... GitHub Releases made downloads strip line feed/carriage return.
@@ -159,7 +160,7 @@ function Write-Log
 
 Function CleanLogfiles([string]$TargetFolder,[int]$DaysOld,[bool]$ListOnly=$False)
 {
-    write-host -debug -ForegroundColor Yellow -BackgroundColor Cyan $TargetFolder
+    write-host -debug -ForegroundColor DarkRed -BackgroundColor Cyan $TargetFolder
     if (Test-Path $TargetFolder) {
         $Now = Get-Date
         $LastWrite = $Now.AddDays(-$daysOld)
