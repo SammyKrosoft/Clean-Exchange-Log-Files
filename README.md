@@ -23,39 +23,21 @@
 ```
 
 sample output:
-```output
-C:\inetpub\logs\LogFile
-Last Write Time for C:\inetpub\logs\LogFile : 03/19/2021 17:21:14
-Found 2 files in C:\inetpub\logs\LogFile ...
-Total file size for that folder: 10.78 MB / 0.01 GB
-INFO: Read only mode, won't delete
-C:\Program Files\Microsoft\Exchange Server\Logging\
-Last Write Time for C:\Program Files\Microsoft\Exchange Server\Logging\ : 03/19/2021 17:21:14
-Found 1001 files in C:\Program Files\Microsoft\Exchange Server\Logging\ ...
-Total file size for that folder: 453.59 MB / 0.44 GB
-INFO: Read only mode, won't delete
-C:\Program Files\Microsoft\Exchange Server\Bin\Search\Ceres\Diagnostics\ETLTraces\
-Last Write Time for C:\Program Files\Microsoft\Exchange Server\Bin\Search\Ceres\Diagnostics\ETLTraces\ : 03/19/2021 17:21:15
-Found  files in C:\Program Files\Microsoft\Exchange Server\Bin\Search\Ceres\Diagnostics\ETLTraces\ ...
-Total file size for that folder: 0.75 MB / 0.00 GB
-INFO: Read only mode, won't delete
-C:\Program Files\Microsoft\Exchange Server\Bin\Search\Ceres\Diagnostics\Logs
-Last Write Time for C:\Program Files\Microsoft\Exchange Server\Bin\Search\Ceres\Diagnostics\Logs : 03/19/2021 17:21:15
-Found 5 files in C:\Program Files\Microsoft\Exchange Server\Bin\Search\Ceres\Diagnostics\Logs ...
-Total file size for that folder: 7.01 MB / 0.01 GB
-INFO: Read only mode, won't delete
 
-
-The script took 2.57 seconds to execute...
-```
 
   - example to clean Exchange Logging files and IIS Log files aged 5 days and older:
 
 ```powershell
 
-.\CleanExchangeLogFiles.ps1 -Days 5
+.\CleanExchangeLogFiles.ps1 -Days 2
 
 ```
+
+You'll see this when it's cleaning up:
+
+![image](https://user-images.githubusercontent.com/33433229/112651455-c8925e80-8e22-11eb-9b5b-4dfcc98b0e46.png)
+
+
 
 # Download the Latest version of the script
 
