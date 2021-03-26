@@ -39,6 +39,19 @@ sample output:
 You'll see the progress bars (one for the folder it's cleaning, and one for the files it's cleaning for each folder):
 ![image](https://user-images.githubusercontent.com/33433229/112651455-c8925e80-8e22-11eb-9b5b-4dfcc98b0e46.png)
 
+# Usage on a Windows Scheduled task
+
+> NOTE: to use in a Windows Scheduled task, use the `-NoConfirmation` switch to bypass the Confirm Yes/No dialog box. Otherwise the script will just wait for a user input, which will never come because it's a Windows Scheduled task, most likely configured as "non interactive" because we want it to be automatic.
+ 
+In that case, use the -NoConfirmation switch:
+
+```powershell
+.\CleanExchangeLogFiles -Days 2 -NoConfirmation
+```
+
+This will launch the script in files deletion mode immediately, without the need of a user interaction.
+
+
 # Log file
 
 The script log file will be located on the user's Documents folder:
