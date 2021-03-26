@@ -1,6 +1,6 @@
 # Clean-Exchange-Log-Files
 
-**NOTE: there is an issue when I publish releases of the script - for now I'll just provide the link to the RAW text script, or you can just download the whole repository and just keep the `CleanExchangeLogFiles.ps1` file. Apologizes for the invonvenience**
+***NOTE: there is an issue when I publish releases of the script - for now I'll just provide the link to the RAW text script, or you can just download the whole repository and just keep the `CleanExchangeLogFiles.ps1` file. Apologizes for the invonvenience***
 
 - PowerShell script taken and adapted from [Edward Van Biljon](https://social.technet.microsoft.com/profile/edward+van+biljon) (was on his Technet Gallery, which has been decommissioned in 2020 (original link: *gallery.technet.microsoft.com/office/Clear-Exchange-2013-Log-71abba44*) with the following modifications:
 
