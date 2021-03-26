@@ -39,6 +39,13 @@ sample output:
 You'll see the progress bars (one for the folder it's cleaning, and one for the files it's cleaning for each folder):
 ![image](https://user-images.githubusercontent.com/33433229/112651455-c8925e80-8e22-11eb-9b5b-4dfcc98b0e46.png)
 
+# Log file
+
+The script log file will be located on the user's Documents folder:
+![image](https://user-images.githubusercontent.com/33433229/112653994-51aa9500-8e25-11eb-95f3-b643e5f03d3b.png)
+
+And it will contain the same information than on the screen:
+![image](https://user-images.githubusercontent.com/33433229/112653900-3f305b80-8e25-11eb-9c7c-946196afb044.png)
 
 
 # Download the Latest version of the script
