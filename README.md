@@ -8,6 +8,8 @@
 
 - added -DoNotDelete switch to just assess the amount of files that we'd potentially remove
 
+- added -NoConfirmation switch to avoir being prompted to continue or cancel
+
 - added progress bars
 
 - added script log file
