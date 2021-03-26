@@ -63,4 +63,4 @@ And it will contain the same information than on the screen:
 
 # Download the Latest version of the script
 
-[Either download the whole repo, or copy/paste the text of CleanExchangeLogs.ps1 from this link](https://raw.githubusercontent.com/SammyKrosoft/Clean-Exchange-Log-Files/master/CleanExchangeLogs.ps1)
+[Either download the whole repo, or copy/paste the text of CleanExchangeLogs.ps1 from this link](https://raw.githubusercontent.com/SammyKrosoft/Clean-Exchange-Log-Files/master/CleanExchangeLogsFiles.ps1)
