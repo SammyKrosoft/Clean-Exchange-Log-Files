@@ -25,7 +25,8 @@
 ```
 
 sample output:
-![image](https://user-images.githubusercontent.com/33433229/112651581-e9f34a80-8e22-11eb-8069-1678a48e5f80.png)
+![image](https://user-images.githubusercontent.com/33433229/112657665-06928100-8e29-11eb-975f-d08fa14c3775.png)
+
 
 
   - example to clean Exchange Logging files and IIS Log files aged 5 days and older:
