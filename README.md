@@ -23,6 +23,7 @@
 ```
 
 sample output:
+![image](https://user-images.githubusercontent.com/33433229/112651581-e9f34a80-8e22-11eb-8069-1678a48e5f80.png)
 
 
   - example to clean Exchange Logging files and IIS Log files aged 5 days and older:
@@ -33,8 +34,7 @@ sample output:
 
 ```
 
-You'll see this when it's cleaning up:
-
+You'll see the progress bars (one for the folder it's cleaning, and one for the files it's cleaning for each folder):
 ![image](https://user-images.githubusercontent.com/33433229/112651455-c8925e80-8e22-11eb-9b5b-4dfcc98b0e46.png)
 
 
