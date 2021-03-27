@@ -74,6 +74,7 @@ $ErrorActionPreference = "SilentlyContinue"
 #Script Version
 $ScriptVersion = "1.3.3"
 <# Version changes
+v1.3.3 : fixed issue where copy/paste text from script was messed up in Notepad.exe
 v1.3.2 : changed color of folders display (was yellow on cyan, now is dark red on cyan)
 v1.3.1 : renamed the script from CleanExchangeLogs.ps1 to CleanExchangeLogFiles.ps1 and added examples and completed description
 v1.3   : added -NoConfirmation switch to bypass the confirmation dialog box.
