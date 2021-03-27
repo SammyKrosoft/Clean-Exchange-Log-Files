@@ -1,7 +1,7 @@
 
 <#PSScriptInfo
 
-.VERSION 1.3.2
+.VERSION 1.3.3
 
 .GUID 2fdbeea1-7642-44e3-9c0c-258631425e36
 
@@ -72,7 +72,7 @@ $DebugPreference = "Continue"
 # Set Error Action to your needs
 $ErrorActionPreference = "SilentlyContinue"
 #Script Version
-$ScriptVersion = "1.3.2"
+$ScriptVersion = "1.3.3"
 <# Version changes
 v1.3.2 : changed color of folders display (was yellow on cyan, now is dark red on cyan)
 v1.3.1 : renamed the script from CleanExchangeLogs.ps1 to CleanExchangeLogFiles.ps1 and added examples and completed description
@@ -145,7 +145,7 @@ function Write-Log
 	
 	try
 	{
-		$DateTime = Get-Date -Format ‘MM-dd-yy HH:mm:ss’
+		$DateTime = Get-Date -Format 'MM-dd-yy HH:mm:ss'
 		$Invocation = "$($MyInvocation.MyCommand.Source | Split-Path -Leaf):$($MyInvocation.ScriptLineNumber)"
 		Add-Content -Value "$DateTime - $Invocation - $Message" -Path $LogFileName
 		if (!($Silent)){Write-Host $Message -ForegroundColor Green}
