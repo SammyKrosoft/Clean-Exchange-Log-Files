@@ -1,7 +1,7 @@
 
 <#PSScriptInfo
 
-.VERSION 1.3.3
+.VERSION 1.3.4
 
 .GUID 2fdbeea1-7642-44e3-9c0c-258631425e36
 
@@ -59,6 +59,7 @@
 Param(
     [Parameter(Mandatory = $false,ParameterSetName="Exec")][int]$Days=5,
     [Parameter(Mandatory = $false, ParameterSetName="Exec")][switch]$DoNotDelete,
+    [Parameter(Mandatory = $false, ParameterSetName="Exec")][switch]$DeleteLodCTRBackup,
     [Parameter(Mandatory = $false)][switch]$NoConfirmation,
     [Parameter(Mandatory = $false,ParameterSetName="Check")][switch]$CheckVersion
     
@@ -74,6 +75,7 @@ $ErrorActionPreference = "SilentlyContinue"
 #Script Version
 $ScriptVersion = "1.3.3"
 <# Version changes
+v1.3.4 : added DeleteLodCTRBackup switch
 v1.3.3 : fixed issue where copy/paste text from script was messed up in Notepad.exe
 v1.3.2 : changed color of folders display (was yellow on cyan, now is dark red on cyan)
 v1.3.1 : renamed the script from CleanExchangeLogs.ps1 to CleanExchangeLogFiles.ps1 and added examples and completed description
@@ -212,6 +214,11 @@ Function CleanLogfiles([string]$TargetFolder,[int]$DaysOld,[bool]$ListOnly=$Fals
     $ExchangeLoggingPath="$ExchangeInstallPath" + "Logging\"
     $ETLLoggingPath="$ExchangeInstallPath" + "Bin\Search\Ceres\Diagnostics\ETLTraces\"
     $ETLLoggingPath2="$ExchangeInstallPath" + "Bin\Search\Ceres\Diagnostics\Logs"
+    
+    # v1.3.4 added DeleteLodCTRBackup folder
+    If ($DeleteLodCTRBackup){
+        $LodCRTBackupFolderPath = "$ExchangeInstallPath" + "Logging\lodctr_backups"
+    }
 
 If (!($NoConfirmation)){  
     # Asking user if he's sure
@@ -249,6 +256,13 @@ Write-Progress -Activity "Logging cleanup" -Status "Deleting ETL traces" -Id 1 -
 
 Write-Progress -Activity "Logging cleanup" -Status "Deleting other ETL traces" -Id 1 -PercentComplete 75
   CleanLogfiles -TargetFolder $ETLLoggingPath2 -DaysOld $Days -ListOnly $ListOnlyMode
+
+if ($DeleteLodCTRBackup) {
+  Write-Progress -Activity "Logging cleanup" -Status "Chose to delete LodCTRfiles" -Id 1 -PercentComplete 85
+  CleanLogfiles -TargetFolder $LodCRTBackupFolderPath -DaysOld $Days -ListOnly $ListOnlyMode
+}
+
+
 
 Write-Progress -Activity "Logging cleanup" -Status "CLEANUP COMPLETE" -Id 1 -PercentComplete 100
 
